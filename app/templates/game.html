@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>2048 Game</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+</head>
+<body>
+    <div class="container">
+        <h1>2048 Game</h1>
+        <div id="board"></div>
+        <button id="save-btn">Save Game</button>
+        <button id="load-btn">Load Game</button>
+    </div>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="{{ url_for('static', filename='game.js') }}"></script>
+    <script>
+        $(document).ready(function() {
+            $('#save-btn').click(function() {
+                saveGame();
+            });
+
+            $('#load-btn').click(function() {
+                loadGame();
+            });
+        });
+
+        function saveGame() {
+           var board = getCurrentBoardState();
+
+
+            $.ajax({
+                url: '/save_game',
+                type: 'POST',
+                contentType: 'application/json',
+                data: JSON.stringify({ board: JSON.stringify(board) }),
+                success: function(response) {
+                    alert('Game saved successfully!');
+                },
+                error: function(xhr, status, error) {
+                    alert('Error saving game.');
+                }
+            });
+        }
+        function loadGame() {
+            $.ajax({
+                url: '/load_game',
+                type: 'GET',
+                success: function(response) {
+                console.log(response)
+                    var board = response.board
+                    sessionStorage.setItem('board', JSON.stringify(board));
+                    console.log(JSON.stringify(board))
+                    updateBoard(board);
+                    alert('Game loaded successfully!');
+                },
+                error: function(xhr, status, error) {
+                    alert('Error loading game.');
+                }
+            });
+        }
+
+
+    </script>
+</body>
+</html>
